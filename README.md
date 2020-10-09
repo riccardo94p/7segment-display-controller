@@ -1,2 +1,2 @@
 # 7segment-display-controller
-A VHDL implementation of a simple controller for a 7-segment Display
+A VHDL implementation of a simple controller for a 7-segment Display and a Synthesis with Xilinx Vivado.

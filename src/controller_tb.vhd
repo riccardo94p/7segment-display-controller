@@ -7,15 +7,6 @@ END controller_tb;
 
 ARCHITECTURE testbench OF controller_tb IS
 
-component dff is
-	port (
-		rst: in std_logic;
-		clk: in std_logic;
-		d: in std_logic;
-		q: out std_logic
-		);
-	end component;
-
 	--constants declaration
 	constant T_CLK  : time := 100 ns;
 	constant T_RESET : time := 5 ns;
@@ -33,12 +24,9 @@ component dff is
    	signal digit_tb : std_logic_vector(3 downto 0) := (others => '0');
 	signal digit_select_tb : std_logic_vector(1 downto 0);
 
-	signal segments_tb : std_logic_vector(6 downto 0);
 	signal output_segments_tb : std_logic_vector(6 downto 0);
 	signal output_enable_tb : std_logic_vector(3 downto 0);
-	signal enable_tb : std_logic_vector(3 downto 0);
 
-   --constant clk_period : time := 1 ns;
 begin
 controller_map:
 	entity work.controller 
@@ -47,36 +35,29 @@ controller_map:
 		reset =>rst_tb,
 		digit => digit_tb,
 		digit_select => digit_select_tb,
-		enable => enable_tb,
-		segments => segments_tb
+		enable => output_enable_tb,
+		segments => output_segments_tb
 	);
-dff_map:
-	entity work.dff_N(struct)
-	generic map(N => 7)
-	port map (d_in => segments_tb, q_out => output_segments_tb, clk => clk_tb, resetn => rst_tb);
-
-dff_map2:
-	entity work.dff_N(struct)
-	generic map(N => 4)
-	port map (d_in => enable_tb, q_out => output_enable_tb, clk => clk_tb, resetn => rst_tb);
 	
 
    clk_process :process
    begin
 	rst_tb <= '1' after T_RESET;
-	clk_tb <= '0';
-	wait for T_CLK/2;
 	clk_tb <= '1';
+	wait for T_CLK/2;
+	clk_tb <= '0';
 	wait for T_CLK/2;      	
 	
    end process;
-      
+--feed the simulated user inputs
    stim_proc: process
    begin               
      for i in 0 to 9 loop
 		digit_tb <= conv_std_logic_vector(i,4);
 		digit_select_tb <= conv_std_logic_vector(i mod 4,2);
-          	wait for T_CLK/3;
+          	wait for T_CLK;
+          	--T_CLK for ease of reading in the simulation diagram
+          	--can be any value
      end loop;
    end process;
 
